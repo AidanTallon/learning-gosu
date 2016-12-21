@@ -18,20 +18,20 @@ class Player
     if @move_x > 0
       @move_x -= 1
       new_x_pos = [(@x + (1 * speed_mod)), ($window.width - 8)].min
-      @x = new_x_pos if @scene.can_move_to? new_x_pos, @y
+      @x = new_x_pos if @scene.can_move_to? new_x_pos + 8, @y
     elsif @move_x < 0
       @move_x += 1
       new_x_pos = [(@x - (1 * speed_mod)), (0 + 8)].max
-      @x = new_x_pos if @scene.can_move_to? new_x_pos, @y
+      @x = new_x_pos if @scene.can_move_to? new_x_pos - 8, @y
     end
     if @move_y > 0
       @move_y -= 1
       new_y_pos = [(@y + (1 * speed_mod)), ($window.height - 8)].min
-      @y = new_y_pos if @scene.can_move_to? @x, new_y_pos
+      @y = new_y_pos if @scene.can_move_to? @x, new_y_pos + 8
     elsif @move_y < 0
       @move_y += 1
       new_y_pos = [(@y - (1 * speed_mod)), (0 + 8)].max
-      @y = new_y_pos if @scene.can_move_to? @x, new_y_pos
+      @y = new_y_pos if @scene.can_move_to? @x, new_y_pos - 8
     end
     if @move_x == 0 and @move_y == 0
       @sprite = get_sprite :stand

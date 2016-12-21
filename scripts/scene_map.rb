@@ -84,17 +84,20 @@ class SceneMap
 
   def interactive_adjacent?(x, y)
     @interactive_elements.each do |key, element|
-      if x - element[:pos][1] < 16 and x - element[:pos][1] > -16 and y - element[:pos][0] < 16 and y - element[:pos][0] > -16
+      element_x = (element[:pos][1] * 16) + 8
+      element_y = (element[:pos][0] * 16) + 8
+      if x - element_x <= 24 and x - element_x >= -24 and y - element_y <= 24 and y - element_y >= -24
         return true
       end
     end
+    return false
   end
 
   def interact_with_adjacent(x, y)
     @interactive_elements.each do |key, element|
-      element_x = (element[:pos][1] * 16)
-      element_y = (element[:pos][0] * 16)
-      if x - element_x <= 32 and x - element_x >= -32 and y - element_y <= 32 and y - element_y >= -32
+      element_x = (element[:pos][1] * 16) + 8
+      element_y = (element[:pos][0] * 16) + 8
+      if x - element_x <= 24 and x - element_x >= -24 and y - element_y <= 24 and y - element_y >= -24
         interact_with element
       end
     end

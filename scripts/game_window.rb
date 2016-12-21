@@ -3,7 +3,7 @@ class GameWindow < Gosu::Window
   def initialize
     super 640, 480, false
     self.caption = 'Platformer Game'
-    @scene = SceneMap.new self
+    @scene = SceneMap.new self, DemoLevel
   end
 
   def update

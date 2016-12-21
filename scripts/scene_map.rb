@@ -1,17 +1,17 @@
 class SceneMap
 
-  def initialize(window)
+  def initialize(window, level_map)
     @player = Player.new self, (17 * 16) + 8, (9 * 16) + 8
     basic_tiles_2 = Gosu::Image.load_tiles window, 'graphics/sprites/environment/basic_tiles_2.png', 16, 16, true
     things_0 = Gosu::Image.load_tiles window, 'graphics/sprites/environment/things_0.png', 16, 16, true
     @tileset = basic_tiles_2 + things_0
 
     # Map layout
-    @level = DemoLevel.level
+    @level = level_map.level
     # Interactive elements
-    @interactive_elements = DemoLevel.interactive_elements
+    @interactive_elements = level_map.interactive_elements
     # Animated elements
-    @animated_elements = DemoLevel.animated_elements
+    @animated_elements = level_map.animated_elements
   end
 
   def update

@@ -16,7 +16,7 @@ class SceneMap
     @level[5]   = [ 11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,   5,   8,   8,   8,   5,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  10,  10,  10,  10]
     @level[6]   = [ 11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,   5,   8,   8,   8,   5,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  10,  10,  10,  10]
     @level[7]   = [ 11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,   5,   8,   8,   8,   5,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  10,  10,  11,  11]
-    @level[8]   = [ 11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,   6,   6,  48,   6,   6,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  10,  10,  11,  11]
+    @level[8]   = [ 11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,   6,   6, :i0,   6,   6,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  10,  10,  11,  11]
     @level[9]   = [ 10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  11,  11]
     @level[10]  = [ 10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  10,  11,  11]
     @level[11]  = [ 11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,   3,   2,   8,   2,   3,  11,  11,  11,  11,  11,  11,  11,  11]
@@ -38,6 +38,17 @@ class SceneMap
     @level[27]  = [ 11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11]
     @level[28]  = [ 11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11]
     @level[29]  = [ 11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11]
+  
+    # Interactive elements
+    @interactive_elements = {
+      i0: {
+            id: 0,
+            pos: [8, 17],
+            description: 'Player house door',
+            type: :door,
+            state: :closed
+          }
+    }
   end
 
   def update
@@ -48,7 +59,47 @@ class SceneMap
     @player.draw
     @level.each_with_index do |x, x_row|
       x.each_with_index do |y, y_row|
-        @tileset[y].draw y_row * 16, x_row * 16, 1
+        get_tile(y).draw y_row * 16, x_row * 16, 1
+      end
+    end
+  end
+
+  def get_tile(tile)
+    if tile.class == Symbol
+      if @interactive_elements[tile][:type] == :door
+        return @tileset[48] if @interactive_elements[tile][:state] == :closed
+        return @tileset[8] if @interactive_elements[tile][:state] == :open
+      end
+    else
+      return @tileset[tile]
+    end
+  end
+
+  def interactive_adjacent?(x, y)
+    @interactive_elements.each do |key, element|
+      if x - element[:pos][1] < 16 and x - element[:pos][1] > -16 and y - element[:pos][0] < 16 and y - element[:pos][0] > -16
+        return true
+      end
+    end
+  end
+
+  def interact_with_adjacent(x, y)
+    @interactive_elements.each do |key, element|
+      element_x = (element[:pos][1] * 16)
+      element_y = (element[:pos][0] * 16)
+      if x - element_x <= 32 and x - element_x >= -32 and y - element_y <= 32 and y - element_y >= -32
+        interact_with element
+      end
+    end
+  end
+
+
+  def interact_with(element)
+    if element[:type] == :door
+      if element[:state] == :closed
+        element[:state] = :open
+      elsif element[:state] == :open
+        element[:state] = :closed
       end
     end
   end
@@ -65,6 +116,15 @@ class SceneMap
 
   def blocker_tile?(tile_id)
     blockers = [0, 1, 2, 3, 4, 5, 6, 7, 14, 15, 22, 23, 24, 25, 26, 27, 30, 31, 32, 34, 35, 36, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 52, 54, 55, 56, 60, 61, 62, 63, 64, 68, 69, 70, 71, 72, 77, 78, 79, 80, 92, 93, 100]
+    if tile_id.class == Symbol
+      if @interactive_elements[tile_id][:type] == :door
+        if @interactive_elements[tile_id][:state] == :closed
+          return true
+        elsif @interactive_elements[tile_id][:state] == :open
+          return false
+        end
+      end
+    end
     if blockers.include? tile_id
       return true
     else
@@ -73,6 +133,9 @@ class SceneMap
   end
 
   def button_down(id)
+    if id == Gosu::KbSpace
+      @player.interact
+    end
   end
 
   def button_up(id)

@@ -66,6 +66,12 @@ class Player
     end
   end
 
+  def interact
+    if @scene.interactive_adjacent? @x, @y
+      @scene.interact_with_adjacent @x, @y
+    end
+  end
+
   def move(dir)
     if dir == :left
       @move_x = -3

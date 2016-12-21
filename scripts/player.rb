@@ -16,17 +16,17 @@ class Player
     move :down if $window.button_down? Gosu::KbDown
     if @move_x > 0
       @move_x -= 1
-      @x += 1 * speed_mod
+      @x = [(@x + (1 * speed_mod)), ($window.width - 8)].min
     elsif @move_x < 0
       @move_x += 1
-      @x -= 1 * speed_mod
+      @x = [(@x - (1 * speed_mod)), (0 + 8)].max
     end
     if @move_y > 0
       @move_y -= 1
-      @y += 1 * speed_mod
+      @y = [(@y + (1 * speed_mod)), ($window.height - 8)].min
     elsif @move_y < 0
       @move_y += 1
-      @y -= 1 * speed_mod
+      @y = [(@y - (1 * speed_mod)), (0 + 8)].max
     end
     if @move_x == 0 and @move_y == 0
       @sprite = get_sprite :stand
@@ -35,7 +35,7 @@ class Player
 
   def draw
     frame = Gosu::milliseconds / 100 % @sprite.length
-    @sprite[frame].draw @x, @y, 5
+    @sprite[frame].draw_rot @x, @y, 5, 1
   end
 
   def load_sprites

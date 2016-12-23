@@ -74,14 +74,14 @@ class DemoLevel
     interactive_elements = {
       i0: {
             id: 0,
-            pos: [8, 17],
+            pos: [17, 8],
             description: 'Player house door',
             type: :door,
             state: :closed
           },
       i1: {
             id: 1,
-            pos: [11, 29],
+            pos: [29, 11],
             description: 'Other house door',
             type: :door,
             state: :closed

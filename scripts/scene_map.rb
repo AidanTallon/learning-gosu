@@ -1,10 +1,15 @@
 class SceneMap
+  attr_reader :player, :level
 
   def initialize(window, level_map)
     @player = Player.new self, (17 * 16) + 8, (9 * 16) + 8
     basic_tiles_2 = Gosu::Image.load_tiles window, 'graphics/sprites/environment/basic_tiles_2.png', 16, 16, true
     things_0 = Gosu::Image.load_tiles window, 'graphics/sprites/environment/things_0.png', 16, 16, true
     @tileset = basic_tiles_2 + things_0
+
+    @actors = []
+    @skeleton_1 = Skeleton.new self, (16 * 16) + 8, (6 * 16) + 8
+    @actors << @skeleton_1
 
     # Map layout
     @level = level_map.level
@@ -15,10 +20,12 @@ class SceneMap
   end
 
   def update
+    @actors.each { |x| x.update }
     @player.update
   end
 
   def draw
+    @actors.each { |x| x.draw }
     @player.draw
     @level.each do |z|
       z.each_with_index do |y, y_row|
@@ -47,8 +54,8 @@ class SceneMap
 
   def interactive_adjacent?(x, y)
     @interactive_elements.each do |key, element|
-      element_x = (element[:pos][1] * 16) + 8
-      element_y = (element[:pos][0] * 16) + 8
+      element_x = (element[:pos][0] * 16) + 8
+      element_y = (element[:pos][1] * 16) + 8
       if x - element_x <= 24 and x - element_x >= -24 and y - element_y <= 24 and y - element_y >= -24
         return true
       end
@@ -58,8 +65,8 @@ class SceneMap
 
   def interact_with_adjacent(x, y)
     @interactive_elements.each do |key, element|
-      element_x = (element[:pos][1] * 16) + 8
-      element_y = (element[:pos][0] * 16) + 8
+      element_x = (element[:pos][0] * 16) + 8
+      element_y = (element[:pos][1] * 16) + 8
       if x - element_x <= 24 and x - element_x >= -24 and y - element_y <= 24 and y - element_y >= -24
         interact_with element
       end

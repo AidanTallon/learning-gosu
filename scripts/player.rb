@@ -1,4 +1,5 @@
 class Player
+  attr_reader :x, :y
 
   def initialize(scene, x, y)
     @scene = scene

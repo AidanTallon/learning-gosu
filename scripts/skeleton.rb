@@ -14,9 +14,13 @@ class Skeleton
     target_tile = [x / 16, y / 16]
     current_tile = [@x / 16, @y / 16]
 
+    # co_ords is an array of all moveable tiles with a counter indicating distance from target
     co_ords = []
+    # initialize with the target tile
     co_ords << [target_tile, 0]
+    # iterate through co_ords. new tiles will be added as the iteration continues
     co_ords.each do |tile|
+      # tiles to the tile being iterated on
       check_tiles = [
                       [tile[0][0] + 1, tile[0][1]],
                       [tile[0][0] - 1, tile[0][1]],
@@ -24,36 +28,48 @@ class Skeleton
                       [tile[0][0],     tile[0][1] - 1],
                     ]
       check_tiles.each do |check_tile|
+        # Check if the tile can be moved to
         if @scene.can_move_to? check_tile[0] * 16, check_tile[1] * 16
           should_add = true
+          # check if tile is already in array, and whether a quicker route has been found
+          # TODO: maybe can be more efficent?
           co_ords.map do |x|
             if x[0] == check_tile and x[1] <= tile[1] + 1
+              # A quicker route already exists, so do not add
               should_add = false
               break
             elsif x[0] == check_tile and x[1] > tile[1] + 1
+              # A slower route exists, so delete it and override in a bit
               co_ords.delete x
+              break
             end
           end
+          # Add check_tile if route is quicker or previously didn't exist
           co_ords << [check_tile, tile[1] + 1] if should_add
         end
       end
+      # Break when 100 tiles have been checked. TODO: break when certain conditions are met
       break if co_ords.length > 100
     end
     path_found = false
+    # Check that a path exists
     co_ords.each do |x|
       if x[0] == current_tile
         path_found = true
         break
       end
     end
+    # Return nil if not path found. This is used when the method is called so the skeleton knows not to move
     return nil unless path_found
     if path_found
+      # tiles adjacent to current position
       move_tiles = [
                       [current_tile[0] + 1, current_tile[1]],
                       [current_tile[0] - 1, current_tile[1]],
                       [current_tile[0],     current_tile[1] + 1],
                       [current_tile[0],     current_tile[1] - 1]
                     ]
+      # move_options contains a reference to available co_ords entries
       move_options = []
       co_ords.each do |x|
         if move_tiles.include? x[0]
@@ -61,13 +77,14 @@ class Skeleton
         end
       end
       tile = []
+      # What does this do? Does it just take any move_tile?
       move_options.each do |x|
         if x != nil
           tile = x
           break
         end
       end
-      #binding.pry
+      # return direction to move
       case tile
       when move_tiles[0]
         return :right

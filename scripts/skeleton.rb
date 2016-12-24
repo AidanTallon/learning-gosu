@@ -8,6 +8,9 @@ class Skeleton
     @move_y = 0
     load_sprites
     @sprite = get_sprite :stand
+    @wander_x = 0
+    @wander_y = 0
+    @wandering = 0
   end
 
   def find_path_to x, y
@@ -98,9 +101,40 @@ class Skeleton
     end
   end
 
+  def wander
+    if @wandering <= 0
+      @wandering = 20
+      dir = [:up, :right, nil].sample
+      if dir == :up
+        @wander_y= [20, -20].sample
+      elsif dir == :right
+        @wander_x = [20, -20].sample
+      end
+    end
+    if @wander_x > 0
+      @wander_x -= 1
+      move :right
+    elsif @wander_x < 0
+      @wander_x += 1
+      move :left
+    end
+    if @wander_y > 0
+      @wander_y -= 1
+      move :up
+    elsif @wander_y < 0
+      @wander_y += 1
+      move :down
+    end
+    @wandering -= 1
+  end
+
   def update
     dir = find_path_to @scene.player.x, @scene.player.y
-    move dir if dir
+    if dir
+      move dir
+    else
+      wander
+    end
     if @move_x > 0
       @move_x -= 1
       new_x_pos = [(@x + (1 * speed_mod)), ($window.width - 8)].min
